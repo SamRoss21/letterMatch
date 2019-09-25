@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-output_folder = '/home/ecenaz/research/symbol_finder/letter_match_out/'
+output_folder = './out/'
 
 def imread_objects_from_path(original_image_path, mask_path):
     img = cv2.imread(original_image_path)
@@ -57,6 +57,7 @@ def get_bounding_rect_for_isolated_obj(original_image, gray, img_id):
 
 #resizes an image to be 300 x 300 maintaining ratio
 def img_resize(img_name, img_id):
+	# print('in img_resize img_name : ' + img_name)
 	img = cv2.imread(img_name,0)
 	resized_file_name = img_id + "_resized.jpg"
 	h, w = img.shape[:2]
@@ -135,16 +136,16 @@ def match_shapes(img1, img2):
 	return proportion_correct
 
 def test_pair(img1_name, img1_id, img2_name, img2_id):
-	# print(img1_name)
+	# print("img_1_name" +img1_name)
 	img1 = cv2.imread(img1_name,0)
 	img2 = cv2.imread(img2_name,0)
 
 	#img2 = cv2.imread('circle_contour2.png',0)
 	#img2_id = 'circle'
 
-	ret, thresh = cv2.threshold(img1, 127, 255,0)
+	# ret, thresh = cv2.threshold(img1, 127, 255,0)
 	ret, thresh2 = cv2.threshold(img2, 127, 255,0)
-	contours,hierarchy = cv2.findContours(thresh,2,1)
+	# contours,hierarchy = cv2.findContours(thresh,2,1)
 
 	#cv2.imshow('thresh',thresh)
 	#cv2.waitKey(0)
@@ -156,21 +157,21 @@ def test_pair(img1_name, img1_id, img2_name, img2_id):
 	# cnt2 = contours[0]
 
 	#crop tree image
-	cropped1 = get_bounding_rect_for_isolated_obj(img1, img1,  img1_id)
-	print(cropped1)
-	img3 = cv2.imread(cropped1,0)
+	# cropped1 = img1_name #get_bounding_rect_for_isolated_obj(img1, img1,  img1_id)
+	# print(cropped1)
+	# img3 = img1#cv2.imread(cropped1,0)
 	#cv2.imshow('cropped',img3)
 	#cv2.waitKey(0)
 	#cv2.destroyAllWindows()
 	#print ret
 
-	resized1 = img_resize(img1_name, img1_id)
-	resized_img1 = cv2.imread(resized1,0)
+	# resized1 = img_resize(img1_name, img1_id)
+	# resized_img1 = cv2.imread(resized1,0)
 
 	#crop triangle image
 	cropped2 = get_bounding_rect_for_isolated_obj(img2, img2, img2_id)
-	#print(cropped2)
-	img3 = cv2.imread(cropped2,0)
+	# print("Cropped 2: " + cropped2)
+	# img3 = cv2.imread(cropped2,0)
 	#cv2.imshow('cropped',img3)
 	#cv2.waitKey(0)
 	#cv2.destroyAllWindows()
@@ -179,7 +180,7 @@ def test_pair(img1_name, img1_id, img2_name, img2_id):
 	resized2 = img_resize(cropped2, img2_id)
 	resized_img2 = cv2.imread(resized2,0)
 
-	proportion = match_shapes(resized_img1, resized_img2)
+	proportion = match_shapes(img1, resized_img2)
 
 	#match_test_img1 = np.zeros((2, 2), np.uint8)
 	#match_test_img2 = np.zeros((2, 2), np.uint8)
@@ -240,19 +241,33 @@ alphabet_set = [("A.png","A"),("a_lower.png","a"),("B.png","B"),("b_lower.png","
 # 		print(image[0],image[1],letter[0],letter[1])
 # 		results.write(test_pair(image[0],image[1],letter[0],letter[1]))
 import sys
+import os
 if __name__ == '__main__':
-    results = open("results.txt","w")
-    path = '/home/ecenaz/research/symbol_finder/static/full_alphabet/'
-    img_name = sys.argv[1]
-    img_id = sys.argv[2]
-    results_list = []
-    for letter_tuple in alphabet_set:
-        match = test_pair(img_name,img_id,path +letter_tuple[0], letter_tuple[1])
-        # results.write(test_pair(image[0],image[1],letter[0],letter[1]))
-        # if match >= 0.5:
-        results.write("letter:," + letter_tuple[1] +", score:," + str(match*100)+",\n")
-        results_list.append({'letter':letter_tuple[1], 'score': (match*100)})
-        print( sorted(results_list, key =  lambda i: i['score'], reverse=True))
+	# results = open("results.txt","w")
+    # path = '/home/ecenaz/research/symbol_finder/static/full_alphabet/'
+    # # img_name = sys.argv[1]
+    # # img_id = sys.argv[2]
+    # results_list = []
+    # for letter_tuple in alphabet_set:
+    #     match = test_pair(img_name,img_id,path +letter_tuple[0], letter_tuple[1])
+    #     # results.write(test_pair(image[0],image[1],letter[0],letter[1]))
+    #     # if match >= 0.5:
+    #     results.write("letter:," + letter_tuple[1] +", score:," + str(match*100)+",\n")
+    #     results_list.append({'letter':letter_tuple[1], 'score': (match*100)})
+    #     print( sorted(results_list, key =  lambda i: i['score'], reverse=True))
+	groups = ['./Thin', "./Thin_Filled", "./Wide","./Wide_Filled"]
+
+	for test in os.listdir('./test_set'):
+		results = open(test+".txt", "w")
+		for group in groups:
+			for filename in os.listdir(group):
+				if not filename.startswith('.'):
+					img_name = "./test_set/" + test
+					img_id = test.replace('.jpg', '')
+					letter_img_path = group + "/"+ filename
+					letter_name = filename.replace(".png", "")
+					match = test_pair(letter_img_path, letter_name, img_name,img_id,)
+					results.write("test_file:,"+test+", letter:," + letter_name +", score:," + str(match*100)+",\n")
 
 
 
