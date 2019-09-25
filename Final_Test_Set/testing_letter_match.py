@@ -135,17 +135,70 @@ def match_shapes(img1, img2):
 	proportion_correct = 1 - (match_sum/float(max_sum))
 	return proportion_correct
 
+# def test_pair(img1_name, img1_id, img2_name, img2_id):
+# 	# print("img_1_name" +img1_name)
+# 	img1 = cv2.imread(img1_name,0)
+# 	img2 = cv2.imread(img2_name,0)
+
+# 	#img2 = cv2.imread('circle_contour2.png',0)
+# 	#img2_id = 'circle'
+
+# 	# ret, thresh = cv2.threshold(img1, 127, 255,0)
+# 	ret, thresh2 = cv2.threshold(img2, 127, 255,0)
+# 	# contours,hierarchy = cv2.findContours(thresh,2,1)
+
+# 	#cv2.imshow('thresh',thresh)
+# 	#cv2.waitKey(0)
+# 	#cv2.destroyAllWindows()
+
+
+# 	#cnt1 = contours[0]
+# 	contours,hierarchy = cv2.findContours(thresh2,2,1)
+# 	# cnt2 = contours[0]
+
+# 	#crop tree image
+# 	# cropped1 = img1_name #get_bounding_rect_for_isolated_obj(img1, img1,  img1_id)
+# 	# print(cropped1)
+# 	# img3 = img1#cv2.imread(cropped1,0)
+# 	#cv2.imshow('cropped',img3)
+# 	#cv2.waitKey(0)
+# 	#cv2.destroyAllWindows()
+# 	#print ret
+
+# 	# resized1 = img_resize(img1_name, img1_id)
+# 	# resized_img1 = cv2.imread(resized1,0)
+
+# 	#crop triangle image
+# 	cropped2 = get_bounding_rect_for_isolated_obj(img2, img2, img2_id)
+# 	# print("Cropped 2: " + cropped2)
+# 	# img3 = cv2.imread(cropped2,0)
+# 	#cv2.imshow('cropped',img3)
+# 	#cv2.waitKey(0)
+# 	#cv2.destroyAllWindows()
+# 	#print ret
+
+# 	resized2 = img_resize(cropped2, img2_id)
+# 	resized_img2 = cv2.imread(resized2,0)
+
+# 	proportion = match_shapes(img1, resized_img2)
+
+# 	#match_test_img1 = np.zeros((2, 2), np.uint8)
+# 	#match_test_img2 = np.zeros((2, 2), np.uint8)
+# 	#match_test_img2 = np.full((2, 2),255, np.uint8)
+# 	return proportion  # img1_id + "+" + img2_id + "," + str(proportion) + ",\r,"
+
+
 def test_pair(img1_name, img1_id, img2_name, img2_id):
-	# print("img_1_name" +img1_name)
+	# print(img1_name)
 	img1 = cv2.imread(img1_name,0)
 	img2 = cv2.imread(img2_name,0)
 
 	#img2 = cv2.imread('circle_contour2.png',0)
 	#img2_id = 'circle'
 
-	# ret, thresh = cv2.threshold(img1, 127, 255,0)
+	ret, thresh = cv2.threshold(img1, 127, 255,0)
 	ret, thresh2 = cv2.threshold(img2, 127, 255,0)
-	# contours,hierarchy = cv2.findContours(thresh,2,1)
+	contours,hierarchy = cv2.findContours(thresh,2,1)
 
 	#cv2.imshow('thresh',thresh)
 	#cv2.waitKey(0)
@@ -157,21 +210,21 @@ def test_pair(img1_name, img1_id, img2_name, img2_id):
 	# cnt2 = contours[0]
 
 	#crop tree image
-	# cropped1 = img1_name #get_bounding_rect_for_isolated_obj(img1, img1,  img1_id)
-	# print(cropped1)
-	# img3 = img1#cv2.imread(cropped1,0)
+	cropped1 = get_bounding_rect_for_isolated_obj(img1, img1,  img1_id)
+	print(cropped1)
+	img3 = cv2.imread(cropped1,0)
 	#cv2.imshow('cropped',img3)
 	#cv2.waitKey(0)
 	#cv2.destroyAllWindows()
 	#print ret
 
-	# resized1 = img_resize(img1_name, img1_id)
-	# resized_img1 = cv2.imread(resized1,0)
+	resized1 = img_resize(img1_name, img1_id)
+	resized_img1 = cv2.imread(resized1,0)
 
 	#crop triangle image
 	cropped2 = get_bounding_rect_for_isolated_obj(img2, img2, img2_id)
-	# print("Cropped 2: " + cropped2)
-	# img3 = cv2.imread(cropped2,0)
+	#print(cropped2)
+	img3 = cv2.imread(cropped2,0)
 	#cv2.imshow('cropped',img3)
 	#cv2.waitKey(0)
 	#cv2.destroyAllWindows()
@@ -180,12 +233,14 @@ def test_pair(img1_name, img1_id, img2_name, img2_id):
 	resized2 = img_resize(cropped2, img2_id)
 	resized_img2 = cv2.imread(resized2,0)
 
-	proportion = match_shapes(img1, resized_img2)
+	proportion = match_shapes(resized_img1, resized_img2)
 
 	#match_test_img1 = np.zeros((2, 2), np.uint8)
 	#match_test_img2 = np.zeros((2, 2), np.uint8)
 	#match_test_img2 = np.full((2, 2),255, np.uint8)
 	return proportion  # img1_id + "+" + img2_id + "," + str(proportion) + ",\r,"
+
+
 
 #img name is what the path would be , img_id is wihtout extension etc.
 def get_letter_suggestions(img_name, img_id):
@@ -266,7 +321,7 @@ if __name__ == '__main__':
 					img_id = test.replace('.jpg', '')
 					letter_img_path = group + "/"+ filename
 					letter_name = filename.replace(".png", "")
-					match = test_pair(letter_img_path, letter_name, img_name,img_id,)
+					match = test_pair(letter_img_path, letter_name, img_name,img_id)
 					results.write("test_file:,"+test+", letter:," + letter_name +", score:," + str(match*100)+",\n")
 
 
